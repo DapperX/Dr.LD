@@ -1,33 +1,5 @@
 #include "init_mem.h"
-#include "multiboot.h"
-#include "print.h"
-#include "memory.h"
 #include "elf.h"
-#include "algorithm.h"
-#include "string.h"
-#include "assert.h"
-#include "debug.h"
-#include "math.h"
-
-#define MEMORY_USED_INIT (0x100000+12*1024)
-#define ADDR_MBI (ADDR_LOW_MEMORY + OFFSET_PAGE_TABLE_INIT + 2048)
-#define ADDR_SEGMENT (ADDR_LOW_MEMORY + MEMORY_USED_INIT)
-
-u32 *const pageDirectory=(u32*)(ADDR_LOW_MEMORY + OFFSET_PAGE_DIRECTORY);
-u32 *const pageTable=(u32*)(ADDR_LOW_MEMORY + OFFSET_PAGE_TABLE_INIT);
-kCall_dispatch *const kernelCallTable=(kCall_dispatch*)(ADDR_LOW_MEMORY + OFFSET_KCT);
-
-#define CNT_MODULE 10
-u32 cnt_module = 0;
-struct multiboot_tag_module *module[CNT_MODULE];
-
-#define CNT_MEM_TOTAL 4
-u32 cnt_mem_total = 0;
-info_memory mem_total[CNT_MEM_TOTAL];
-
-info_ACPI ACPI = (info_ACPI){0};
-
-u32 size_reserveMemory = MEMORY_USED_INIT;
 
 static inline u32 align12(register u32 p)
 {
