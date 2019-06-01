@@ -1,3 +1,5 @@
+#include "ELFFile.hpp"
+
 #include "init_mem.h"
 #include "elf.h"
 

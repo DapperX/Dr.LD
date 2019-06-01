@@ -1,4 +1,4 @@
-#include "a.h"
+#include "lib.h"
 
 int func_internal()
 {
