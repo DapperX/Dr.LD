@@ -92,8 +92,11 @@ public:
 		}
 	};
 
-	slice(const T& begin, size_t n)
-		: base(begin), length(n) {}
+	typedef decltype(*std::declval<T>()) value_type;
+	typedef T pointer;
+
+	slice(const T& begin, size_t n, size_t entbyte=sizeof(value_type))
+		: base(begin), length(n), entbyte(entbyte) {}
 	iterator begin(){
 		return iterator(base);
 	}
@@ -106,8 +109,14 @@ public:
 	const_iterator end() const{
 		return const_iterator(base+length);
 	}
+	pointer raw(){
+		return base;
+	}
 	size_t size() const{
 		return length;
+	}
+	size_t byte_each() const{
+		return entbyte;
 	}
 	auto& operator[](const int offset){
 		return *(base+offset);
@@ -118,7 +127,7 @@ public:
 
 private:
 	const T base;
-	const size_t length;
+	const size_t entbyte, length;
 };
 
 #endif // _SLICE_HPP_
