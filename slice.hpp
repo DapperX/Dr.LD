@@ -54,14 +54,38 @@ public:
 	public:
 		const_iterator(T base) : iterator(base){}
 		const_iterator(const iterator &rhs) : iterator(rhs){}
-		const auto& operator*() const{
+		bool operator==(const const_iterator &rhs) const{
+			return iterator::position==rhs.position;
+		}
+		bool operator!=(const const_iterator &rhs) const{
+			return iterator::position!=rhs.position;
+		}
+		const auto& operator*(){
 			return *iterator::position;
 		}
-		const T& operator->() const{
+		const T& operator->(){
 			return iterator::position;
+		}
+		const_iterator& operator+=(int offset){
+			return iterator::position+=offset, *this;
+		}
+		const_iterator& operator++(){ // ++a
+			return ++iterator::position, *this;
+		}
+		const_iterator operator++(int){ // a++
+			return const_iterator(iterator::position++);
 		}
 		const_iterator operator+(int offset) const{
 			return const_iterator(iterator::position+offset);
+		}
+		const_iterator& operator-=(int offset){
+			return iterator::position-=offset, *this;
+		}
+		const_iterator& operator--(){
+			return ++iterator::position, *this;
+		}
+		const_iterator operator--(int){
+			return const_iterator(iterator::position++);
 		}
 		const_iterator operator-(int offset) const{
 			return const_iterator(iterator::position-offset);
@@ -74,13 +98,13 @@ public:
 		return iterator(base);
 	}
 	const_iterator begin() const{
-		return iterator(base);
+		return const_iterator(base);
 	}
 	iterator end(){
 		return iterator(base+length);
 	}
 	const_iterator end() const{
-		return iterator(base+length);
+		return const_iterator(base+length);
 	}
 	size_t size() const{
 		return length;
