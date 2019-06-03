@@ -118,7 +118,7 @@ slice<type_table*> ELFFile::get_table(const Elf64_Shdr &section, bool spec_entsi
 {
 	auto base = (type_table*)&content[section.sh_offset];
 	size_t entsize = spec_entsize?section.sh_entsize:sizeof(type_table);
-	return slice<type_table*>(base, section.sh_size, entsize);
+	return slice<type_table*>(base, section.sh_size/entsize, entsize);
 }
 
 } // namespace DrLD
@@ -132,7 +132,7 @@ static inline u32 align(u32 val,u32 bit)
 }
 */
 
-/*
+
 void elf_init_LMA(byte *const buffer)
 {
 	// following define may be used in the future for supportnig more segment attributes
@@ -175,8 +175,8 @@ void elf_init_LMA(byte *const buffer)
 	#undef SEGMENT_RW
 	#undef SEGMENT_RO
 }
-*/
-/*
+
+
 void elf_relocate(byte *const buffer)
 {
 	Elf32_Ehdr *header=(Elf32_Ehdr*)buffer;
@@ -236,4 +236,3 @@ void elf_relocate(byte *const buffer)
 	}
 	kprintf("buffer: %p\n",buffer);
 }
-*/
