@@ -96,7 +96,7 @@ typename slice<Elf64_Shdr*>::iterator ELFFile::find_section(int sh_type, slice<E
 
 typename slice<Elf64_Shdr*>::iterator ELFFile::find_section(std::string name, slice<Elf64_Shdr*>::iterator start)
 {
-	const auto& shstrtab = get_strtbl(get_header().e_shstrndx);
+	auto shstrtab = get_strtbl(get_header().e_shstrndx);
 	const char *raw_str = shstrtab.raw();
 	const auto& sections = get_section();
 	for(auto i=start; i!=sections.end(); ++i)

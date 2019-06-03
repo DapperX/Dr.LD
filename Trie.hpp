@@ -53,7 +53,7 @@ public:
     template<typename Func>
     void serialize_par(Func &&f) const {
         std::vector<u8> keybuf;
-        _root.serialize_par(f, keybuf, false);
+        _root.serialize_par(f, keybuf, 0, 0, false);
     }
 
 /*    /// Locked version
@@ -64,7 +64,7 @@ private:
     struct Node {
         Node() : _value(std::nullopt) {}
 
-        std::atomic<size_t> _size, _byte_size;
+        std::atomic<size_t> _size; //, _byte_size;
         AtomicBox<Node> _children[TRIE_WIDTH];
         std::optional<V> _value;
         std::mutex _value_lock;
@@ -73,14 +73,16 @@ private:
         std::pair<std::optional<V>, bool> put(const u8 *key, size_t len, V &&v, Func &&replace, bool is_highbits) {
             if (len == 0) {
                 std::lock_guard<std::mutex> guard(_value_lock);
-                if (_value.has_value() && !replace(_value.value()))
+                if (_value.has_value() && !replace(_value.value(), v))
                     return std::make_pair(std::nullopt, false);
 
-                if (_value.has_value())
+                /* if (_value.has_value())
                     _byte_size -= _value.value().raw_size();
                 else
                     ++_size;
-                _byte_size += v.raw_size();
+                _byte_size += v.raw_size(); */
+                if (!_value.has_value())
+                    ++_size;
 
                 std::optional<V> ret = v;
                 std::swap(_value, ret);
@@ -95,7 +97,7 @@ private:
 
             auto child = _children[idx].get_or_create();
 
-            size_t value_raw_size = v.raw_size();
+            // size_t value_raw_size = v.raw_size();
             std::pair<std::optional<V>, bool> ret;
             if (is_highbits)
                 ret = child->put(key + 1, len - 1, std::move(v), std::move(replace), !is_highbits);
@@ -103,26 +105,30 @@ private:
                 ret = child->put(key, len, std::move(v), std::move(replace), !is_highbits);
 
             if (ret.second) {
-                if (ret.first.has_value())
+                /* if (ret.first.has_value())
                     _byte_size -= ret.first.value().raw_size();
                 else
                     ++_size;
-                _byte_size += value_raw_size;
+                _byte_size += value_raw_size; */
+                if (!ret.first.has_value())
+                    ++_size;
             }
 
             return ret;
         }
 
         template<typename Func>
-        void serialize_par(Func &f, std::vector<u8> &key, bool is_highbits) const {
+        void serialize_par(Func &f, std::vector<u8> &key, size_t rank, size_t /*offset*/, bool is_highbits) const {
             if (_value.has_value())
-                f(key, _value.value());
+                f(key, _value.value(), rank); //, offset);
             if (!is_highbits)
                 key.push_back(0);
+            size_t rank_diff = 0, offset_diff = 0;
             for (int i = 0; i < TRIE_WIDTH; ++i) {
-                auto &child = _children[i];
-                if (!child.has_value())
+                auto child_ptr = _children[i].get();
+                if (!child_ptr.has_value())
                     continue;
+                auto &child = *child_ptr.value();
                 u8 &c = key.back();
                 if (is_highbits) {
                     c &= TRIE_MASK;     // Clear the modified high bits
@@ -130,7 +136,9 @@ private:
                 } else {
                     c = i;
                 }
-                child.serialize_par(f, key, !is_highbits);
+                child.serialize_par(f, key, rank + rank_diff, 0 /*offset + offset_diff*/, !is_highbits);
+                rank_diff += child._size;
+                // offset_diff += child._byte_size;
             }
             if (!is_highbits)
                 key.pop_back();

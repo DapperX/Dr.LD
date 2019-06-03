@@ -45,6 +45,9 @@ public:
 		iterator operator-(int offset) const{
 			return iterator(position-offset);
 		}
+		size_t operator-(const iterator &rhs) const {
+			return position - rhs.position;
+		}
 
 	protected:
 		T position;
@@ -89,6 +92,9 @@ public:
 		}
 		const_iterator operator-(int offset) const{
 			return const_iterator(iterator::position-offset);
+		}
+		size_t operator-(const const_iterator &rhs) const {
+			return iterator::position - rhs.position;
 		}
 	};
 

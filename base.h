@@ -29,4 +29,12 @@ typedef u16 le16;
 typedef u32 le32;
 typedef u64 le64;
 
+#include <vector>
+
+namespace DrLD {
+
+using byte_array = std::vector<u8>;
+
+}
+
 #endif //_BASE_H
