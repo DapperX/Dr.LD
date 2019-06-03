@@ -38,7 +38,7 @@ public:
 	slice<Elf64_Shdr*>::iterator find_section(std::string name, slice<Elf64_Shdr*>::iterator start);
 
 private:
-	const std::string filename;
+	std::string filename;
 	type_identity identity;
 	size_t size;
 	byte* content;
@@ -46,6 +46,21 @@ private:
 	static type_identity id_now;
 	static type_identity gen_identity();
 };
+
+template<typename type_table>
+slice<type_table*> ELFFile::get_table(size_t section_id, bool spec_entsize)
+{
+	const auto &section = get_section()[section_id];
+	return get_table<type_table>(section, spec_entsize);
+}
+
+template<typename type_table>
+slice<type_table*> ELFFile::get_table(const Elf64_Shdr &section, bool spec_entsize)
+{
+	auto base = (type_table*)&content[section.sh_offset];
+	size_t entsize = spec_entsize?section.sh_entsize:sizeof(type_table);
+	return slice<type_table*>(base, section.sh_size/entsize, entsize);
+}
 
 }
 
