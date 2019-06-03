@@ -99,6 +99,7 @@ public:
 	};
 
 	typedef decltype(*std::declval<T>()) value_type;
+	typedef const T const_pointer;
 	typedef T pointer;
 
 	slice(const T& begin, size_t n, size_t entbyte=sizeof(value_type))
@@ -116,6 +117,9 @@ public:
 		return const_iterator(base+length);
 	}
 	pointer raw(){
+		return base;
+	}
+	const_pointer raw() const{
 		return base;
 	}
 	size_t size() const{
