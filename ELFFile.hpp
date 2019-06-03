@@ -2,6 +2,8 @@
 #define _ELFFILE_HPP_
 
 #include <string>
+#include "elf.h"
+#include "base.h"
 #include "slice.hpp"
 
 namespace DrLD {
@@ -27,13 +29,15 @@ public:
 	slice<Elf64_Sym*> get_symtbl(size_t section_id);
 	slice<Elf32_Rel*> get_reltbl(size_t section_id);
 
+	template<typename type_table>
+	slice<type_table*> get_table(size_t section_id, bool spec_entsize=false);
+	template<typename type_table>
+	slice<type_table*> get_table(const Elf64_Shdr &section, bool spec_entsize=false);
+
 	slice<Elf64_Shdr*>::iterator find_section(int sh_type, slice<Elf64_Shdr*>::iterator start);
 	slice<Elf64_Shdr*>::iterator find_section(std::string name, slice<Elf64_Shdr*>::iterator start);
 
 private:
-	template<typename type_table>
-	slice<type_table*> get_table(size_t section_id, bool spec_entsize=false);
-
 	const std::string filename;
 	type_identity identity;
 	size_t size;

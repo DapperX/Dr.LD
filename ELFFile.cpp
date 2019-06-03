@@ -6,6 +6,8 @@
 
 namespace DrLD {
 
+ELFFile::type_identity ELFFile::id_now;
+
 ELFFile::ELFFile(const std::string &filename)
 	: identity(gen_identity()), filename(filename)
 {
@@ -27,7 +29,7 @@ ELFFile::ELFFile(ELFFile &&rhs)
 
 ELFFile::~ELFFile()
 {
-	// TODO
+	delete []content;
 }
 
 const std::string& ELFFile::get_filename() const
@@ -69,7 +71,7 @@ slice<Elf64_Shdr*> ELFFile::get_section()
 
 slice<char*> ELFFile::get_strtbl(size_t section_id)
 {
-	return get_table<char>(section_id, true);
+	return get_table<char>(section_id, false);
 }
 
 slice<Elf64_Sym*> ELFFile::get_symtbl(size_t section_id)
@@ -108,6 +110,12 @@ template<typename type_table>
 slice<type_table*> ELFFile::get_table(size_t section_id, bool spec_entsize)
 {
 	const auto &section = get_section()[section_id];
+	return get_table<type_table>(section, spec_entsize);
+}
+
+template<typename type_table>
+slice<type_table*> ELFFile::get_table(const Elf64_Shdr &section, bool spec_entsize)
+{
 	auto base = (type_table*)&content[section.sh_offset];
 	size_t entsize = spec_entsize?section.sh_entsize:sizeof(type_table);
 	return slice<type_table*>(base, section.sh_size, entsize);
