@@ -19,21 +19,7 @@ public:
     void operator()(const char *filename);
 
 private:
-    static bool replace(const Elf64_Sym &old_hdr, const Elf64_Sym &new_hdr)
-    {
-        const unsigned char old_bind = ELF64_ST_BIND(old_hdr.st_info);
-        const unsigned char new_bind = ELF64_ST_BIND(new_hdr.st_info);
-        if (old_bind == new_bind) {
-            if (old_bind != STB_WEAK)
-                throw "TOO STRONG";
-            return false;
-        }
-        if (old_bind == STB_WEAK)
-            return true;
-        if (new_bind == STB_WEAK)
-            return false;
-        return false;   // should not reach
-    }
+    static bool replace(const Elf64_Sym &old_hdr, const Elf64_Sym &new_hdr);
 
 private:
     std::vector<ELFFile> files;

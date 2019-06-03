@@ -38,7 +38,7 @@ public:
 	slice<Elf64_Shdr*>::iterator find_section(std::string name, slice<Elf64_Shdr*>::iterator start);
 
 private:
-	const std::string filename;
+	std::string filename;
 	type_identity identity;
 	size_t size;
 	byte* content;

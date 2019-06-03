@@ -23,8 +23,12 @@ ELFFile::ELFFile(const std::string &filename)
 }
 
 ELFFile::ELFFile(ELFFile &&rhs)
+	: filename(std::move(rhs.filename)), identity(rhs.identity),
+	size(rhs.size), content(rhs.content)
 {
-	// TODO
+	rhs.size = 0;
+	rhs.identity = 0;
+	rhs.content = nullptr;
 }
 
 ELFFile::~ELFFile()
@@ -118,7 +122,7 @@ slice<type_table*> ELFFile::get_table(const Elf64_Shdr &section, bool spec_entsi
 {
 	auto base = (type_table*)&content[section.sh_offset];
 	size_t entsize = spec_entsize?section.sh_entsize:sizeof(type_table);
-	return slice<type_table*>(base, section.sh_size, entsize);
+	return slice<type_table*>(base, section.sh_size/entsize, entsize);
 }
 
 } // namespace DrLD
