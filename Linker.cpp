@@ -7,6 +7,8 @@
 #include <chrono>
 #include <iostream>
 
+#include <omp.h>
+
 namespace DrLD {
 
 Linker::Linker() {}
