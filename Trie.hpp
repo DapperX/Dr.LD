@@ -5,6 +5,7 @@
 #include "base.h"
 
 #include <cstddef>
+#include <iostream>
 #include <mutex>
 #include <optional>
 #include <utility>
@@ -23,11 +24,10 @@ public:
     Trie() {}
     ~Trie() {}
 
-    std::optional<V> get(const u8 *key, size_t len) const {
+    std::optional<V> get(const u8 *key) const {
         const Node *p = &_root;
 
-        while (len--) {
-            const size_t c = key[0];
+        while (size_t c = key[0]) {
             auto child = p->_children[c & TRIE_MASK].get();
             if (!child.has_value()) return {};
             p = child.value();
@@ -41,8 +41,8 @@ public:
     }
 
     template<typename Func>
-    std::pair<std::optional<V>, bool> put(const u8 *key, size_t len, V &&v, Func &&replace) {
-        return _root.put(key, len, std::move(v), std::move(replace), false);
+    std::pair<std::optional<V>, bool> put(const u8 *key, V &&v, Func &&replace) {
+        return _root.put(key, std::move(v), std::move(replace), false);
     }
 
 /*    template<typename Func>
@@ -70,8 +70,8 @@ private:
         std::mutex _value_lock;
 
         template<typename Func>
-        std::pair<std::optional<V>, bool> put(const u8 *key, size_t len, V &&v, Func &&replace, bool is_highbits) {
-            if (len == 0) {
+        std::pair<std::optional<V>, bool> put(const u8 *key, V &&v, Func &&replace, bool is_highbits) {
+            if (*key == '\0' && !is_highbits) {
                 std::lock_guard<std::mutex> guard(_value_lock);
                 if (_value.has_value() && !replace(_value.value(), v))
                     return std::make_pair(std::nullopt, false);
@@ -100,9 +100,9 @@ private:
             // size_t value_raw_size = v.raw_size();
             std::pair<std::optional<V>, bool> ret;
             if (is_highbits)
-                ret = child->put(key + 1, len - 1, std::move(v), std::move(replace), !is_highbits);
+                ret = child->put(key + 1, std::move(v), std::move(replace), !is_highbits);
             else
-                ret = child->put(key, len, std::move(v), std::move(replace), !is_highbits);
+                ret = child->put(key, std::move(v), std::move(replace), !is_highbits);
 
             if (ret.second) {
                 /* if (ret.first.has_value())

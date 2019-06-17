@@ -43,13 +43,13 @@ private:
     {
         struct Bundle {
             ELFFile *file;
-            Elf32_Shdr symtab;
-            Elf32_Shdr strtab;
+            Elf64_Shdr symtab;
+            Elf64_Shdr strtab;
         };
         size_t symtab_offset, symtab_bytes;
         size_t strtab_offset, strtab_bytes;
         std::vector<Bundle> headers;
-        void add(const ELFFile *file, Elf32_Shdr &symtab, Elf32_Shdr &strtab)
+        void add(const ELFFile *file, Elf64_Shdr &symtab, Elf64_Shdr &strtab)
         {
             size_t offset = headers.size() ? headers.back().end_offset() : 0;
             headers.push_back(Bundle { .file = file, .symtab = symtab, .strtab = strtab, })

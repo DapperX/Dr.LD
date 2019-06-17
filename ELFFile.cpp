@@ -83,9 +83,9 @@ slice<Elf64_Sym*> ELFFile::get_symtbl(size_t section_id)
 	return get_table<Elf64_Sym>(section_id, true);
 }
 
-slice<Elf32_Rel*> ELFFile::get_reltbl(size_t section_id)
+slice<Elf64_Rel*> ELFFile::get_reltbl(size_t section_id)
 {
-	return get_table<Elf32_Rel>(section_id, true);
+	return get_table<Elf64_Rel>(section_id, true);
 }
 
 typename slice<Elf64_Shdr*>::iterator ELFFile::find_section(int sh_type, slice<Elf64_Shdr*>::iterator start)
@@ -121,7 +121,7 @@ static inline u32 align(u32 val,u32 bit)
 }
 */
 
-
+/*
 void elf_init_LMA(byte *const buffer)
 {
 	// following define may be used in the future for supportnig more segment attributes
@@ -225,3 +225,4 @@ void elf_relocate(byte *const buffer)
 	}
 	kprintf("buffer: %p\n",buffer);
 }
+*/
