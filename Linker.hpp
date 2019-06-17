@@ -5,6 +5,7 @@
 #include "ELFFile.hpp"
 
 #include <map>
+#include <cassert>
 
 namespace DrLD {
 

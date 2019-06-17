@@ -3,4 +3,6 @@
 *.a
 *.mod
 build
+test/gen
 test/code/*.*
+test/code/main

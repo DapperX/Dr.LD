@@ -1,6 +1,5 @@
 #include "Linker.hpp"
 #include "ELFFile.hpp"
-#include "Sync.hpp"
 #include "Trie.hpp"
 
 #include <cassert>
