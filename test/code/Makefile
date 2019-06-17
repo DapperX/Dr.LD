@@ -9,7 +9,8 @@ OBJS  =  $(patsubst %.c,%.o,$(SOURCES))
 .PHONY: all
 
 all: $(OBJS)
- 
+	$(CC) $^ -o main
+
 %.o: %.c
 	$(CC) $< -c $(CFLAGS)
 

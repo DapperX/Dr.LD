@@ -10,7 +10,7 @@
 #define MAX_NUM_CALL 5
 using namespace std;
 
-vector<set<string>> symbol_all;
+vector<vector<string>> symbol_all;
 vector<string> symbol_scatter;
 
 string get_random_string()
@@ -28,13 +28,22 @@ string get_random_string()
 
 void gen_symbol()
 {
+	set<string> symbol_u;
 	for(int i=0; i<NUM_FILE; ++i)
 	{
-		set<string> symbol_this;
+		vector<string> symbol_this;
 		while(symbol_this.size()<NUM_SYMBOL_PER_FILE)
-			symbol_this.insert(get_random_string());
+		{
+			const string sym_name = "f_" + get_random_string();
+			if(symbol_u.find(sym_name)==symbol_u.end())
+			{
+				symbol_this.push_back(sym_name);
+				symbol_u.insert(sym_name);
+			}
+		}
 		symbol_all.push_back(move(symbol_this));
 	}
+	symbol_scatter = vector<string>(symbol_u.begin(), symbol_u.end());
 }
 
 void gen_header(int id)
@@ -50,7 +59,7 @@ void gen_header(int id)
 	}
 	code += "#endif //" + macro + "\n";
 
-	printf("header #%d:\n%s\n", id, code.c_str());
+	// printf("header #%d:\n%s\n", id, code.c_str());
 	ofstream file("code/" + to_string(id) + ".h");
 	file << code;
 }
@@ -72,8 +81,23 @@ void gen_source(int id)
 		code += "}\n";
 	}
 	// code += "}\n";
-	printf("source #%d:\n%s\n", id, code.c_str());
+	// printf("source #%d:\n%s\n", id, code.c_str());
 	ofstream file("code/" + to_string(id) + ".c");
+	file << code;
+}
+
+void gen_main()
+{
+	string code;
+	for(int i=0; i<NUM_FILE; ++i)
+		code += "#include \"" + to_string(i) +".h\"\n";
+	code += "int main(){\n";
+	for(const auto& func : symbol_scatter)
+	{
+		code += func + "();\n";
+	}
+	code += "}\n";
+	ofstream file("code/main.c");
 	file << code;
 }
 
@@ -84,16 +108,19 @@ void gen_code()
 		gen_header(i);
 		gen_source(i);
 	}
+	gen_main();
 }
 
 int main()
 {
 	srand(time(NULL));
 	gen_symbol();
+	/*
 	for(auto& k : symbol_all)
 	{
 		symbol_scatter.insert(symbol_scatter.end(), k.begin(), k.end());
 	}
+	*/
 	gen_code();
 	return 0;
 }

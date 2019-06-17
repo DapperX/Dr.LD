@@ -1,4 +1,6 @@
 .DS_Store
 *.o
+*.a
+*.mod
 build
 test/code/*.*
