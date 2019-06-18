@@ -4,7 +4,7 @@ CXXFLAGS = -Xpreprocessor -fopenmp -lomp -I"$(shell brew --prefix libomp)/includ
 
 all: build/main test/gen
 
-build/main: main.cpp ELFFile.cpp Linker.cpp
+build/main: main.cpp ELFFile.cpp ELFWriter.cpp Linker.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@ -std=c++17 -g
 
 test/gen: test/test.cpp

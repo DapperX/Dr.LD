@@ -24,7 +24,9 @@ public:
     Trie() {}
     ~Trie() {}
 
-    std::optional<V> get(const u8 *key) const {
+    // V *get(const u8 *key) { return (V*)((const Trie*)this)->get(key); }
+
+    const V *get(const u8 *key) const {
         const Node *p = &_root;
 
         while (size_t c = key[0]) {
@@ -36,8 +38,7 @@ public:
             p = child.value();
             ++key;
         }
-
-        return p->_value;
+        return p->_value ? &p->_value.value() : nullptr;
     }
 
     template<typename Func>

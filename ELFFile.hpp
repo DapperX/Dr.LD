@@ -27,7 +27,7 @@ public:
 	slice<Elf64_Shdr*> get_section();
 	slice<char*> get_strtbl(size_t section_id);
 	slice<Elf64_Sym*> get_symtbl(size_t section_id);
-	slice<Elf64_Rel*> get_reltbl(size_t section_id);
+	slice<Elf64_Rela*> get_relatbl(size_t section_id);
 
 	template<typename type_table>
 	slice<type_table*> get_table(size_t section_id, bool spec_entsize=false);

@@ -30,15 +30,15 @@ private:
     {
         size_t offset, bytes;
         size_t section_id;
-        std::vector<std::pair<const ELFFile *, Elf64_Shdr> > headers;
-        void add(const ELFFile *file, const Elf64_Shdr &sec)
+        std::vector<std::pair<ELFFile *, Elf64_Shdr> > headers;
+        void add(ELFFile *file, const Elf64_Shdr &sec)
         {
             headers.push_back(std::make_pair(file, sec));
             assert(headers[0].second.sh_type == headers.back().second.sh_type);
             bytes += sec.sh_size;
         }
     };
-    // <<file, sec_id>, new_section_offset>
+    // <<file, sec_id>, ,<section, offset>>
     using SectionIndex = std::map<std::pair<ELFFile*, size_t>, std::pair<size_t, size_t>>;
     /*struct SymbolTableCollection
     {

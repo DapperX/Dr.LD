@@ -1,6 +1,7 @@
 #include <cstring>
 #include <sys/uio.h>
 #include <memory>
+#include <iostream>
 #include "elf.h"
 #include "ELFWriter.hpp"
 
@@ -56,7 +57,8 @@ size_t ELFWriter::write(std::string filename)
 		for(auto &t : k.body)
 			buffer.emplace_back((iovec){t.raw(), t.size()*t.byte_each()});
 	}
-	writev(fd, &*buffer.begin(), buffer.size());
+	for (size_t off = 0; off < buffer.size(); off += IOV_MAX)
+		writev(fd, &*buffer.begin() + off, std::min(buffer.size() - off, (size_t)IOV_MAX));
 	fclose(file);
 	return 0;
 }

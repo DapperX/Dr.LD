@@ -83,9 +83,9 @@ slice<Elf64_Sym*> ELFFile::get_symtbl(size_t section_id)
 	return get_table<Elf64_Sym>(section_id, true);
 }
 
-slice<Elf64_Rel*> ELFFile::get_reltbl(size_t section_id)
+slice<Elf64_Rela*> ELFFile::get_relatbl(size_t section_id)
 {
-	return get_table<Elf64_Rel>(section_id, true);
+	return get_table<Elf64_Rela>(section_id, true);
 }
 
 typename slice<Elf64_Shdr*>::iterator ELFFile::find_section(int sh_type, slice<Elf64_Shdr*>::iterator start)
